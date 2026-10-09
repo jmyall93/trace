@@ -24,3 +24,10 @@ This version converts the existing Cloudflare Pages Functions authentication bac
 - Observability enabled in wrangler.toml for troubleshooting.
 - No database migration is required. Existing password hashes made using a different iteration count would need a compatible verification path; earlier failed signups did not finish hashing.
 - **Security:** relaxed password requirements are temporary and unsuitable for commercial launch; add rate limits, stronger credential policies, and complete security testing.
+
+## TRACE Edge installation page update
+- The OPC UA Connector menu now displays a customer-facing installer download and manufacturer selection guide.
+- `/edge-release.json` is intentionally `unpublished`. No download is displayed until a compiled, tested Windows installer is available.
+- To publish: upload a validated, signed Windows installer to an approved GitHub Release; compute its SHA-256; set `status` to `approved`, `version`, `download_url` (a direct github.com release asset URL), and `sha256` in `public/edge-release.json`; redeploy.
+- This change does **not** build or install OPC UA software, add device drivers, enable live data, or modify cloud security. Browser downloads require user consent.
+- Do not mark a release approved without Windows installation, uninstallation, OT read-only, and security validation.
