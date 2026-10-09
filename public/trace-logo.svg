@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 150">
+<defs><linearGradient id="b" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0866e8"/><stop offset=".55" stop-color="#168cff"/><stop offset="1" stop-color="#52c6ff"/></linearGradient><linearGradient id="d" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#57d0ff"/><stop offset="1" stop-color="#0a5ed8"/></linearGradient></defs>
+<g transform="translate(163 4)"><path d="M47 0 0 78h20l27-45 17 29H43L32 80h66z" fill="url(#b)"/><path d="M47 0 98 80H76L47 32z" fill="url(#d)" opacity=".95"/></g>
+<text x="210" y="119" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="43" font-weight="700" letter-spacing="14" fill="currentColor">TRACE</text>
+<text x="210" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="600" letter-spacing="5" fill="currentColor">EVERY CHANGE LEAVES A TRACE</text>
+</svg>
