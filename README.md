@@ -31,3 +31,6 @@ This version converts the existing Cloudflare Pages Functions authentication bac
 - To publish: upload a validated, signed Windows installer to an approved GitHub Release; compute its SHA-256; set `status` to `approved`, `version`, `download_url` (a direct github.com release asset URL), and `sha256` in `public/edge-release.json`; redeploy.
 - This change does **not** build or install OPC UA software, add device drivers, enable live data, or modify cloud security. Browser downloads require user consent.
 - Do not mark a release approved without Windows installation, uninstallation, OT read-only, and security validation.
+
+### v2.2.5 release check UX
+The Check for release control now shows a timestamped result on every click, an explicit unpublished status, and detailed fetch/metadata errors. A cache-busting asset version is applied to edge-ui.js. No installer is published by this change.

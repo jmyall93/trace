@@ -6,7 +6,7 @@ function edgeShell(){return `<div class="edge-head"><div><h1 style="margin:0">OP
 async function edgeRender(){
   const root=document.querySelector('#view');
   root.innerHTML=`<section class="title"><div><h1>TRACE Edge · Industrial Connectivity</h1><p>Install the local Windows connector to monitor PLCs and building automation systems.</p></div></section>
-  <div class="edgegrid"><div class="edge-card"><h3>Install TRACE Edge</h3><p class="edge-muted">One Windows installer. No Python, batch files or compilation required for customers.</p><p id="edgeReleaseStatus" class="edge-notice">Checking for an approved Windows release…</p><div class="edge-actions"><a id="edgeDownload" class="edgebtn" hidden rel="noopener noreferrer">Download Windows installer</a><button id="edgeCheckRelease">Check for release</button></div><p class="edge-muted">Windows 10/11 (64-bit). Run the installer locally and approve the Windows security prompt. No software is installed automatically by this website.</p></div>
+  <div class="edgegrid"><div class="edge-card"><h3>Install TRACE Edge</h3><p class="edge-muted">One Windows installer. No Python, batch files or compilation required for customers.</p><p id="edgeReleaseStatus" class="edge-notice">Checking for an approved Windows release…</p><div class="edge-actions"><a id="edgeDownload" class="edgebtn" hidden rel="noopener noreferrer">Download Windows installer</a><button id="edgeCheckRelease" type="button">Check for release</button></div><p class="edge-muted">Windows 10/11 (64-bit). Run the installer locally and approve the Windows security prompt. No software is installed automatically by this website.</p></div>
   <div class="edge-card"><h3>Connect equipment</h3><p class="edge-muted">TRACE Edge is designed for read-only monitoring. Equipment compatibility depends on PLC model, firmware, communication modules and approved gateways.</p><label>Manufacturer<select id="edgeMake"><option>Rockwell / Allen-Bradley</option><option>Omron</option><option>Siemens</option><option>AutomationDirect / CLICK</option><option>Schneider Electric</option><option>Honeywell / Niagara</option><option>Other OPC UA device</option></select></label><p id="edgeMakeHelp" class="edge-muted"></p><p class="edge-notice">Do not connect to production OT systems until the corresponding driver and security review have been completed.</p></div></div>
   <div class="edge-card edge-section"><h3>Connection lifecycle</h3><p class="edge-muted">1. Download approved installer → 2. Install on authorized Windows host → 3. Enroll Edge with TRACE → 4. Select manufacturer and read-only connection → 5. Review monitored tags.</p><p class="edge-notice">This cloud version does not yet provide live PLC access, gateway enrollment, or validated manufacturer drivers.</p></div>`;
   document.querySelector('#edgeCheckRelease').onclick=edgeCheckRelease;
@@ -25,17 +25,26 @@ function edgeMakeHelp(){
  const sel=document.querySelector('#edgeMake');document.querySelector('#edgeMakeHelp').textContent=tips[sel.value];
 }
 async function edgeCheckRelease(){
- const status=document.querySelector('#edgeReleaseStatus'),link=document.querySelector('#edgeDownload');
- link.hidden=true;link.removeAttribute('href');
+ const status=document.querySelector('#edgeReleaseStatus'),link=document.querySelector('#edgeDownload'),button=document.querySelector('#edgeCheckRelease');
+ if(!status||!link||!button)return;
+ const checkedAt=new Date().toLocaleTimeString();
+ link.hidden=true;link.removeAttribute('href');button.disabled=true;
+ button.textContent='Checking…';status.textContent='Checking approved Windows installer release…';
  try{
- const r=await fetch('/edge-release.json',{cache:'no-store'});if(!r.ok)throw Error('Release metadata unavailable');
- const d=await r.json();
- if(d.status!=='approved'||!d.download_url||!/^https:\/\/github\.com\//.test(d.download_url)||!d.sha256||!/^[a-fA-F0-9]{64}$/.test(d.sha256)){
- status.textContent='Windows installer not published yet. The download will appear after the release is built, tested and approved.';return;
- }
- status.textContent='Approved release '+d.version+' · SHA-256: '+d.sha256+' · Verify the publisher before installing.';
- link.href=d.download_url;link.hidden=false;
- }catch(e){status.textContent='Installer availability cannot be checked right now.';}
+  const r=await fetch('/edge-release.json?check='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}});
+  if(!r.ok)throw Error('HTTP '+r.status+' when loading release metadata');
+  const d=await r.json();
+  if(d.status!=='approved'){
+   status.textContent='Checked at '+checkedAt+': No approved Windows installer has been published yet. TRACE Edge is not available to download.';
+   return;
+  }
+  if(!d.version||!d.download_url||!/^https:\/\/github\.com\/[^/]+\/[^/]+\/releases\/download\//.test(d.download_url)||!d.sha256||!/^[a-fA-F0-9]{64}$/.test(d.sha256)){
+   throw Error('Approved release metadata is incomplete or invalid');
+  }
+  status.textContent='Checked at '+checkedAt+': TRACE Edge '+d.version+' is available. SHA-256: '+d.sha256+'. Verify publisher and checksum before installation.';
+  link.href=d.download_url;link.hidden=false;
+ }catch(e){status.textContent='Checked at '+checkedAt+': Could not check installer availability ('+String(e.message||e)+'). Please try again.';}
+ finally{button.disabled=false;button.textContent='Check again';}
 }
 async function edgeAction(action){try{await api(action,{});await edgeRefresh();if(action==='discover')alert('Discovery started. The tag list will update as tags are found.');}catch(e){alert(e.message)}}
 async function edgeSave(){try{await api('config',{endpoint:document.querySelector('#edgeEndpoint').value,username:document.querySelector('#edgeUser').value,password:document.querySelector('#edgePass').value,poll_seconds:Number(document.querySelector('#edgePoll').value)});document.querySelector('#edgePass').value='';await edgeRefresh()}catch(e){alert(e.message)}}
