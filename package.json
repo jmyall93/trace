@@ -1,1 +1,13 @@
-{"name":"trace-cloudflare","version":"2.1.0","private":true,"scripts":{"dev":"wrangler pages dev public --d1 DB=trace-db","deploy":"wrangler pages deploy public","db:local":"wrangler d1 migrations apply trace-db --local","db:remote":"wrangler d1 migrations apply trace-db --remote"},"devDependencies":{"wrangler":"^4.0.0"}}
+{
+  "name": "trace-workers",
+  "version": "2.1.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "check": "node --check src/index.js && node --check src/auth.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.149.0"
+  }
+}
