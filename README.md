@@ -1,4 +1,4 @@
-# TRACE v2.1.2 — Cloudflare Workers deployment
+# TRACE v2.2.3 — Cloudflare Workers deployment
 
 This version converts the existing Cloudflare Pages Functions authentication backend into a Worker route handler while preserving the TRACE UI, D1 schema and industrial login background.
 
@@ -17,3 +17,10 @@ This version converts the existing Cloudflare Pages Functions authentication bac
 - This is a preproduction candidate. Authentication needs rate limiting, email verification, audit logging and comprehensive security testing before public release.
 - Existing dashboard/PLC integrations remain demo/local as in v2.1.1; this release fixes hosting architecture, not live OPC UA connectivity.
 - Never commit API tokens or passwords into GitHub.
+
+## v2.2.3 fixes
+- PBKDF2 iteration count changed from 310,000 to 100,000 to meet the observed Cloudflare runtime limit.
+- Removed 12-character minimum for trial registration and password reset. Nonempty passwords remain required; a 256-character abuse-prevention ceiling remains.
+- Observability enabled in wrangler.toml for troubleshooting.
+- No database migration is required. Existing password hashes made using a different iteration count would need a compatible verification path; earlier failed signups did not finish hashing.
+- **Security:** relaxed password requirements are temporary and unsuitable for commercial launch; add rate limits, stronger credential policies, and complete security testing.
